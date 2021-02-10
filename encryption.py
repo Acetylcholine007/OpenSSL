@@ -69,7 +69,7 @@ def interface():
             os.system('cls')
             print("CRYPTOGRAPHY PROGRAM USING OPENSSL\n")
             print("a. Generate Password File\nb. Generate RSA keypair\nc. Generate EC keypair\nd. AES\ne. RSA\nf. Hash\ng. ECDSA\nh. Close")
-            operation = input("\nChoose what you want to do: ")
+            operation = input("\nChoose what you want to do: ").lower()
 
             if operation == 'a':
                 pass_name = input("Enter password filename only, i.e. do not include a file extension, to generate the file: ")
@@ -89,11 +89,11 @@ def interface():
                 print(f"\nYour EC key pair is now at your \"{path}\" directory\n")
 
             elif operation == 'd':
-                sub = input("a. Encrypt\nb. Decrypt\nChoose one: ")
+                sub = input("a. Encrypt\nb. Decrypt\nChoose one: ").lower()
                 if sub == 'a':
                     filename = input("Enter filename to be encrypted: ")
-                    mode = input("Enter AES mode ecb / cbc : ")
-                    has_pass_file = input("Do you want to use a password file? y/n : ")
+                    mode = input("Enter AES mode ecb / cbc : ").lower()
+                    has_pass_file = input("Do you want to use a password file? y/n : ").lower()
                     if has_pass_file == 'y':
                         result = aes_encrypt(filename, mode, 'f', input("Enter password filename: "))
                     else:
@@ -107,8 +107,8 @@ def interface():
 
                 elif sub == 'b':
                     filename = input("Enter filename to be decrypted: ")
-                    mode = input("Enter AES mode ecb / cbc : ")
-                    has_pass_file = input("Has password file? y/n : ")
+                    mode = input("Enter AES mode ecb / cbc : ").lower()
+                    has_pass_file = input("Has password file? y/n : ").lower()
                     if has_pass_file == 'y':
                         result = aes_decrypt(filename, mode, 'f', input("Enter password filename: "))
                     else:
@@ -121,15 +121,15 @@ def interface():
                         print('\n', result[1].decode("utf-8").strip())
 
             elif operation == 'e':
-                sub = input("a. Encrypt\nb. Decrypt\nChoose one: ")
+                sub = input("a. Encrypt\nb. Decrypt\nChoose one: ").lower()
                 path = os.path.join(os.getcwd(), "KeyPair")
                 if sub == 'a':
-                    has_pub_key = input("Do you have public key? y/n : ")
+                    has_pub_key = input("Do you have public key? y/n : ").lower()
                     if has_pub_key == 'n':
                         os.mkdir(path)
                         gen_keypair(os.path.join(path, "private.pem"), os.path.join(path, "public.pem"))
                     
-                    has_password = input("Do you have password? y/n : ")
+                    has_password = input("Do you have password? y/n : ").lower()
                     if has_password == 'n':
                         gen_password(input("Enter password filename only, i.e. do not include a file extension, to generate the file: "))
 
@@ -169,10 +169,10 @@ def interface():
                     print('\n', result[1].decode("utf-8").strip())
 
             elif operation == 'g':
-                sub = input("a. Sign\nb. Verify\nChoose one: ")
+                sub = input("a. Sign\nb. Verify\nChoose one: ").lower()
                 path = os.path.join(os.getcwd(), "ECpair")
                 if sub == 'a':
-                    has_pub_key = input("Do you have EC public key? y/n : ")
+                    has_pub_key = input("Do you have EC private key? y/n : ").lower()
                     if has_pub_key == 'n':
                         os.mkdir(path)
                         gen_ECkeys(os.path.join(path, "private.pem"), os.path.join(path, "public.pem"))
