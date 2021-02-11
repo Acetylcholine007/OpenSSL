@@ -14,13 +14,14 @@ def aes_encrypt(filename, mode, pass_type = 'n', password = '', bit = '128'):
     return (stdout, stderr)
 
 def aes_decrypt(filename, mode, pass_type = 'n', password = '', bit = '128'):
-    name, ext = os.path.splitext(filename)
+    original = os.path.splitext(filename)
+    name, ext = os.path.splitext(original[0])
     if pass_type == 'f':
-        cmd = f'openssl enc -d -aes-{bit}-{mode} -in "{filename}" -out "{name}_new.{ext}" -pass file:"{password}"'
+        cmd = f'openssl enc -d -aes-{bit}-{mode} -in "{filename}" -out "{name}_new{ext}" -pass file:"{password}"'
         process = Popen(cmd, shell = True, stdout = PIPE, stderr = PIPE)
         stdout, stderr = process.communicate()
     elif pass_type == 'p':
-        cmd = f'openssl enc -d -aes-{bit}-{mode} -in "{filename}" -out "{name}_new.{ext}" -pass pass:"{password}"'
+        cmd = f'openssl enc -d -aes-{bit}-{mode} -in "{filename}" -out "{name}_new{ext}" -pass pass:"{password}"'
         process = Popen(cmd, shell = True, stdout = PIPE, stderr = PIPE)
         stdout, stderr = process.communicate()
     return (stdout, stderr)
@@ -32,8 +33,9 @@ def rsa_encrypt(password_file, key = "key"):
     return (stdout, stderr)
 
 def rsa_decrypt(password_file, key):
-    name, ext = os.path.splitext(password_file)
-    cmd = f'openssl rsautl -decrypt -inkey {key} -in "{password_file}" -out "{name}_new.{ext}"'
+    original = os.path.splitext(password_file)
+    name, ext = os.path.splitext(original[0])
+    cmd = f'openssl rsautl -decrypt -inkey {key} -in "{password_file}" -out "{name}_new{ext}"'
     process = Popen(cmd, shell = True, stdout = PIPE, stderr = PIPE)
     stdout, stderr = process.communicate()
     return (stdout, stderr)
@@ -56,7 +58,7 @@ def gen_password(filename = "password"):
 
 def sha(filename, version):
     name, ext = os.path.splitext(filename)
-    cmd = f'openssl dgst -sha{version} -out "{name}_sha{version}.bin" "{filename}"'
+    cmd = f'openssl dgst -sha{version} -out "{name}_sha{version}bin" "{filename}"'
     process = Popen(cmd, shell = True, stdout = PIPE, stderr = PIPE)
     stdout, stderr = process.communicate()
     return (stdout, stderr)
