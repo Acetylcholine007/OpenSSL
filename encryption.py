@@ -27,7 +27,7 @@ def aes_decrypt(filename, mode, pass_type = 'n', password = '', bit = '128'):
     return (stdout, stderr)
 
 def rsa_encrypt(password_file, key = "key"):
-    cmd = f'openssl rsautl -encrypt -inkey "{key}" -pubin -in "{password_file}" -out "{password_file}"'
+    cmd = f'openssl rsautl -encrypt -inkey "{key}" -pubin -in "{password_file}" -out "{password_file}.enc"'
     process = Popen(cmd, shell = True, stdout = PIPE, stderr = PIPE)
     stdout, stderr = process.communicate()
     return (stdout, stderr)
@@ -90,18 +90,21 @@ def interface():
                 pass_name = input("Enter password filename only, i.e. do not include a file extension, to generate the file: ")
                 gen_password(pass_name)
                 print(f"\nYour password file \"{pass_name}.bin\" was generated\n")
+                input("\nPress enter to continue...")
 
             elif operation == 'b':
                 path = os.path.join(os.getcwd(), "KeyPair")
                 os.mkdir(path)
                 gen_keypair(os.path.join(path, "private.pem"), os.path.join(path, "public.pem"))
                 print(f"\nYour RSA key pair is now at your \"{path}\" directory\n")
+                input("\nPress enter to continue...")
             
             elif operation == 'c':
                 path = os.path.join(os.getcwd(), "ECpair")
                 os.mkdir(path)
                 gen_ECkeys(os.path.join(path, "private.pem"), os.path.join(path, "public.pem"))
                 print(f"\nYour EC key pair is now at your \"{path}\" directory\n")
+                input("\nPress enter to continue...")
 
             elif operation == 'd':
                 sub = input("a. Encrypt\nb. Decrypt\nChoose one: ").lower()
@@ -134,6 +137,8 @@ def interface():
                         print(result[1].decode("utf-8").strip())
                     else:
                         print('\n', result[1].decode("utf-8").strip())
+
+                input("\nPress enter to continue...")
 
             elif operation == 'e':
                 sub = input("a. Encrypt\nb. Decrypt\nChoose one: ").lower()
@@ -172,6 +177,8 @@ def interface():
                         print(result[1].decode("utf-8"), result2[1].decode("utf-8"))
                     else:
                         print('\n', result[1].decode("utf-8"), result2[1].decode("utf-8"))
+                
+                input("\nPress enter to continue...")
 
             elif operation == 'f':
                 filename = input("Enter filename: ")
@@ -182,6 +189,8 @@ def interface():
                     print(f'\n"{filename}" has was generated using sha{version}\n')
                 else:
                     print('\n', result[1].decode("utf-8").strip())
+
+                input("\nPress enter to continue...")
 
             elif operation == 'g':
                 sub = input("a. Sign\nb. Verify\nChoose one: ").lower()
@@ -211,12 +220,13 @@ def interface():
                         print(f'\n"{filename}" Result: MISMATCH\n')
                     else:
                         print('\n', result[1].decode("utf-8").strip())
+                
+                input("\nPress enter to continue...")
 
             elif operation == 'h':
                 break
         except:
             print("Exception Occured")
-        finally:
             input("\nPress enter to continue...")
 
 def main():
