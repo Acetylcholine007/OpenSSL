@@ -4,59 +4,72 @@ from subprocess import Popen, PIPE
 #==============================================PRIMITIVE OPERATIONS===========================================================
 def aes_encrypt(filename, mode, pass_type = 'n', password = '', bit = '128'):
     if pass_type == 'f':
-        process = Popen(f'openssl enc -aes-{bit}-{mode} -salt -in {filename} -out {filename}.enc -pass file:{password}'.split(" "), stdout = PIPE, stderr = PIPE)
+        cmd = f'openssl enc -aes-{bit}-{mode} -salt -in "{filename}" -out "{filename}.enc" -pass file:"{password}"'
+        process = Popen(cmd, shell = True, stdout = PIPE, stderr = PIPE)
         stdout, stderr = process.communicate()
     elif pass_type == 'p':
-        process = Popen(f'openssl enc -aes-{bit}-{mode} -salt -in {filename} -out {filename}.enc -pass pass:{password}'.split(" "), stdout = PIPE, stderr = PIPE)
+        cmd = f'openssl enc -aes-{bit}-{mode} -salt -in "{filename}" -out "{filename}.enc" -pass pass:"{password}"'
+        process = Popen(cmd, shell = True, stdout = PIPE, stderr = PIPE)
         stdout, stderr = process.communicate()
     return (stdout, stderr)
 
 def aes_decrypt(filename, mode, pass_type = 'n', password = '', bit = '128'):
-    parts = filename.split(".")
+    name, ext = os.path.splitext(filename)
     if pass_type == 'f':
-        process = Popen(f'openssl enc -d -aes-{bit}-{mode} -in {filename} -out {parts[0]}_new.{parts[-2]} -pass file:{password}'.split(" "), stdout = PIPE, stderr = PIPE)
+        cmd = f'openssl enc -d -aes-{bit}-{mode} -in "{filename}" -out "{name}_new.{ext}" -pass file:"{password}"'
+        process = Popen(cmd, shell = True, stdout = PIPE, stderr = PIPE)
         stdout, stderr = process.communicate()
     elif pass_type == 'p':
-        process = Popen(f'openssl enc -d -aes-{bit}-{mode} -in {filename} -out {parts[0]}_new.{parts[-2]} -pass pass:{password}'.split(" "), stdout = PIPE, stderr = PIPE)
+        cmd = f'openssl enc -d -aes-{bit}-{mode} -in "{filename}" -out "{name}_new.{ext}" -pass pass:"{password}"'
+        process = Popen(cmd, shell = True, stdout = PIPE, stderr = PIPE)
         stdout, stderr = process.communicate()
     return (stdout, stderr)
 
 def rsa_encrypt(password_file, key = "key"):
-    process = Popen(f'openssl rsautl -encrypt -inkey {key} -pubin -in {password_file} -out {password_file}.enc'.split(" "), stdout = PIPE, stderr = PIPE)
+    cmd = f'openssl rsautl -encrypt -inkey "{key}" -pubin -in "{password_file}" -out "{password_file}"'
+    process = Popen(cmd, shell = True, stdout = PIPE, stderr = PIPE)
     stdout, stderr = process.communicate()
     return (stdout, stderr)
 
 def rsa_decrypt(password_file, key):
-    parts = password_file.split(".")
-    process = Popen(f'openssl rsautl -decrypt -inkey {key} -in {password_file} -out {parts[0]}_new.{parts[-2]}'.split(" "), stdout = PIPE, stderr = PIPE)
+    name, ext = os.path.splitext(password_file)
+    cmd = f'openssl rsautl -decrypt -inkey {key} -in "{password_file}" -out "{name}_new.{ext}"'
+    process = Popen(cmd, shell = True, stdout = PIPE, stderr = PIPE)
     stdout, stderr = process.communicate()
     return (stdout, stderr)
 
 def gen_keypair(prv_filename, pub_filename, bit = "2048"):
-    Popen(f'openssl genrsa -out {prv_filename} {bit}'.split(" "), stdout = PIPE, stderr = PIPE).wait()
-    Popen(f'openssl rsa -in {prv_filename} -pubout -out {pub_filename}'.split(" "), stdout = PIPE, stderr = PIPE).wait()
+    cmd = f'openssl genrsa -out "{prv_filename}" {bit}'
+    cmd2 = f'openssl rsa -in "{prv_filename}" -pubout -out "{pub_filename}"'
+    Popen(cmd, shell = True, stdout = PIPE, stderr = PIPE).wait()
+    Popen(cmd2, shell = True, stdout = PIPE, stderr = PIPE).wait()
 
 def gen_ECkeys(prv_filename, pub_filename, ec_curve = "secp384r1"):
-    Popen(f'openssl ecparam -name {ec_curve} -genkey -noout -out {prv_filename}'.split(" "), stdout = PIPE, stderr = PIPE).wait()
-    Popen(f'openssl ec -in {prv_filename} -pubout -out {pub_filename}'.split(" "), stdout = PIPE, stderr = PIPE).wait()
+    cmd = f'openssl ecparam -name {ec_curve} -genkey -noout -out "{prv_filename}"'
+    cmd2 = f'openssl ec -in "{prv_filename}" -pubout -out "{pub_filename}"'
+    Popen(cmd, shell = True, stdout = PIPE, stderr = PIPE).wait()
+    Popen(cmd2, shell = True, stdout = PIPE, stderr = PIPE).wait()
 
 def gen_password(filename = "password"):
-    Popen(f'openssl rand -out {filename}.bin -hex 64'.split(" "), stdout = PIPE, stderr = PIPE).wait()
+    cmd = f'openssl rand -out "{filename}.bin" -hex 64'
+    Popen(cmd, shell = True, stdout = PIPE, stderr = PIPE).wait()
 
 def sha(filename, version):
-    parts = filename.split(".")
-    process = Popen(f'openssl dgst -sha{version} -out {parts[0]}_sha{version}.bin {filename}'.split(" "), stdout = PIPE, stderr = PIPE)
+    name, ext = os.path.splitext(filename)
+    cmd = f'openssl dgst -sha{version} -out "{name}_sha{version}.bin" "{filename}"'
+    process = Popen(cmd, shell = True, stdout = PIPE, stderr = PIPE)
     stdout, stderr = process.communicate()
     return (stdout, stderr)
 
 def ecdsa_sign(target_filename, prv_filename, filename):
-    cmd = f'openssl dgst -sha256 -sign {prv_filename} {target_filename} > {filename}.bin'
+    cmd = f'openssl dgst -sha256 -sign "{prv_filename}" "{target_filename}" > "{filename}.bin"'
     process = Popen(cmd, shell = True, stdout = PIPE, stderr = PIPE)
     stdout, stderr = process.communicate()
     return (stdout, stderr)
 
 def ecdsa_verify(target_filename, pub_filename, signature):
-    process = Popen(f'openssl dgst -sha256 -verify {pub_filename} -signature {signature} {target_filename}'.split(" "), stdout = PIPE, stderr = PIPE)
+    cmd = f'openssl dgst -sha256 -verify "{pub_filename}" -signature "{signature}" "{target_filename}"'
+    process = Popen(cmd, shell = True, stdout = PIPE, stderr = PIPE)
     stdout, stderr = process.communicate()
     return (stdout, stderr)
 
